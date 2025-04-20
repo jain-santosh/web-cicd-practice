@@ -2,47 +2,48 @@ pipeline {
     agent any
 
     tools {
-        nodejs "Add NodeJS"
+        nodejs 'NodeJS 18' // This name must match what's configured in Jenkins -> Global Tool Configuration
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/<your-username>/<your-repo>.git' // Replace with your repo
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Clone Repository') {
             steps {
-                git 'https://github.com/<your-username>/web-cicd-demo.git'
+                git url: "${env.REPO_URL}", branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo 'Installing node modules...'
                 bat 'npm install'
             }
         }
 
-        stage('Build') {
+        stage('Build App') {
             steps {
+                echo 'Building the React app...'
                 bat 'npm run build'
             }
         }
 
-        stage('Test') {
+        stage('Archive Build') {
             steps {
-                echo 'Run tests here (optional)'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploy step here. Could be copy files, or FTP, or to Netlify/Vercel via API.'
+                echo 'Archiving build artifacts...'
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo '✅ Build completed successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo '❌ Build failed. Check console output.'
         }
     }
 }
