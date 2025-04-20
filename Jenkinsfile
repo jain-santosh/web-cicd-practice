@@ -41,19 +41,21 @@ pipeline {
     }
 
     post {
-        success {
-            echo '✅ Build completed successfully.'
+    success {
+        echo '✅ Build completed successfully.'
 
-            // Kill any existing http-server running on port 5000
-            echo '🧹 Stopping any previous instance of HTTP server on port 5000...'
-            bat 'for /f "tokens=5" %%a in (\'netstat -aon ^| findstr :5000\') do taskkill /F /PID %%a'
+        echo '🧹 Attempting to stop any previous http-server process on port 5000...'
+        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            bat '''
+            for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do taskkill /F /PID %%a
+            '''
+        }
 
-            // Start the new HTTP server
-            echo "🚀 Starting local HTTP server at http://localhost:${PORT}..."
-            bat "start http-server ${BUILD_DIR} -p ${PORT}"
-        }
-        failure {
-            echo '❌ Build failed. Check console output.'
-        }
+        echo '🚀 Starting local HTTP server...'
+        bat "start http-server build -p 5000"
     }
+    failure {
+        echo '❌ Build failed. Check console output.'
+    }
+}
 }
