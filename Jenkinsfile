@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'https://github.com/<your-username>/<your-repo>.git' // Replace with your repo
+        REPO_URL = 'https://github.com/jain-santosh/web-cicd-practice.git' // Replace with your repo
     }
 
     stages {
