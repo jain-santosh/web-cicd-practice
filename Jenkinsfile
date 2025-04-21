@@ -39,8 +39,7 @@ pipeline {
             }
         }
     }
-
-        post {
+    post {
         success {
             echo '✅ Build completed successfully.'
     
@@ -52,7 +51,9 @@ pipeline {
             }
     
             echo '🚀 Starting local HTTP server...'
-            bat 'cmd /c start "" http-server build -p 5000'
+            bat '''
+            start "" cmd /c "http-server build -p 5000"
+            '''
         }
         failure {
             echo '❌ Build failed. Check console output.'
