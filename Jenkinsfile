@@ -40,22 +40,22 @@ pipeline {
         }
     }
 
-    post {
-    success {
-        echo '✅ Build completed successfully.'
-
-        echo '🧹 Attempting to stop any previous http-server process on port 5000...'
-        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-            bat '''
-            for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do taskkill /F /PID %%a
-            '''
+        post {
+        success {
+            echo '✅ Build completed successfully.'
+    
+            echo '🧹 Attempting to stop any previous http-server process on port 5000...'
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                bat '''
+                for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do taskkill /F /PID %%a
+                '''
+            }
+    
+            echo '🚀 Starting local HTTP server...'
+            bat 'cmd /c start "" http-server build -p 5000'
         }
-
-        echo '🚀 Starting local HTTP server...'
-        bat "start http-server build -p 5000"
+        failure {
+            echo '❌ Build failed. Check console output.'
+        }
     }
-    failure {
-        echo '❌ Build failed. Check console output.'
-    }
-}
 }
