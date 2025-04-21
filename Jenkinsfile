@@ -43,10 +43,10 @@ pipeline {
         success {
             echo '✅ Build completed successfully.'
     
-            echo '🧹 Attempting to stop any previous http-server process on port 5000...'
+            echo '🧹 Stopping any existing server on port 5000...'
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                 bat '''
-                for /f "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do taskkill /F /PID %%a
+                for /F "tokens=5" %%a in ('netstat -aon ^| findstr :5000') do taskkill /F /PID %%a
                 '''
             }
     
